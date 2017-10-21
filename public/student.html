@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script>
+    window.onload=function(){
+        var form =document.forms[0];
+        var search=document.getElementById('search');
+        var param={key:search.value}
+        form.onsubmit=function(event){
+            var action=form.action;
+            var request = new XMLHttpRequest();
+        request.open('POST',action,true);
+        request.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        request.send(encodeFormData(param));
+        request.onreadystatechange = function(){
+          if(request.readyState == 4){
+            //响应码
+            if(request.status == 200){
+              var data = JSON.parse(request.responseText);
+              update(data);
+            }
+          }
+        }
+            event.preventDefault();
+        }
+    }
+    function update(data){
+        data.forEach(function(item){
+            var newTr=document.createElement('tr');
+            var newTd1=document.createElement('td');
+            var tbody=document.getElementsByTagName('tbody')[0];
+            newTd1.innerText=item.id;
+            var newTd2=document.createElement('td');
+            newTd2.innerText=item.name;
+            var newTd3=document.createElement('td');
+            newTd3.innerText=item.gender;
+            var newTd4=document.createElement('td');
+            newTd4.innerText=item.birth;
+            newTr.appendChild(newTd1);
+            newTr.appendChild(newTd2);
+            newTr.appendChild(newTd3);
+            newTr.appendChild(newTd4);
+            tbody.appendChild(newTr);
+        });
+    } 
+    function encodeFormData(data){
+        if(!data){return "";} 
+        var pairs = [];
+        for(var name in data){
+            if(!data.hasOwnProperty(name) || typeof data[name] == "function"){
+            continue;
+            }
+            var value = data[name].toString();
+            name = encodeURIComponent(name).replace("%20","+");// 编码
+            value = encodeURIComponent(value).replace("%20","+");// 编码
+            pairs.push(name+"="+value);
+        }
+        return pairs.join('&');
+    }
+    // var form_data=encodeFormData({name:"张三+李四",age:12});
+    // console.log(form_data);
+    </script>
+    <link rel="stylesheet" href="./stylesheets/style.css">
+</head>
+<body>
+    <h2>学生管理</h2>
+    <hr>
+    <form action="student/findAll" >
+        <input type="secrch" id="search" placeholder="关键字" name="key">
+        <input type="submit" value="提交"> </form>
+
+    <table>
+        <tbody>
+            <tr>
+                <th>编号</th>
+                <th>姓名</th>
+                <th>性别</th>
+                <th>生日</th>
+            </tr>
+        </tbody>
+    </table>
+    <div>
+        <button>添加</button>
+        <button>修改</button>
+        <button>删除</button>
+    </div>
+   
+</body>
+</html>
